@@ -1,0 +1,9 @@
+# ignore virtual environment
+/.venv
+
+# ignore pycache
+/__pycache__
+/utils/__pycache__
+
+# ignore file with token
+files/token.json
