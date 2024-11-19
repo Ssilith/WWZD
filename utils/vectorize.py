@@ -1,34 +1,18 @@
 from config import HEADERS, VECTORIZE_URL
-from transformers import AutoTokenizer
 from openpyxl.utils import get_column_letter
 import requests
 import pandas as pd
 import csv
-
-tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
 
 def vectorize(data_col, metadata_col, dataframe, max_length=512):
     data = dataframe[data_col].tolist()
     metadata = dataframe[metadata_col].tolist()
 
-    encoded_data = tokenizer(
-        data,
-        max_length=max_length,
-        truncation=True,
-        padding="max_length",
-        return_tensors="pt",
-    )
-
-    tokenized_strings = [
-        tokenizer.decode(ids, skip_special_tokens=True)
-        for ids in encoded_data["input_ids"]
-    ]
-
     payload = {
         "application": "similarity",
         "task": "sbert-klej-cdsc-r",
-        "input": tokenized_strings,
+        "input": data,
     }
 
     response = requests.post(VECTORIZE_URL, headers=HEADERS, json=payload)
