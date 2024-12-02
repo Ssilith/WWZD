@@ -1,9 +1,7 @@
-from fileinput import filename
-
 from config import HEADERS, VECTORIZE_URL
 import requests
 from tqdm import tqdm
-from multiprocessing import Pool, cpu_count, Lock, Manager
+from multiprocessing import Pool, cpu_count, Manager
 import csv
 
 
@@ -17,7 +15,7 @@ def multithread_vectorize(data_col, metadata_col, dataframe, max_length=512, bat
     with open(
             "files/vector_metadata.csv", mode="w", newline="", encoding="utf-8"
     ) as file:
-        writer = csv.writer(file, delimiter=";")
+        csv.writer(file, delimiter=";")
 
     with Manager() as manager:
         lock = manager.Lock()
