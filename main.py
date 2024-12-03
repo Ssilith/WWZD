@@ -1,15 +1,18 @@
+import csv
+
 from utils.load_csv import load_csv
 from utils.identify_columns import (
     identify_columns_with_llm,
     identify_columns_hardcoded,
 )
+from utils.multithread_vectorize import multithread_vectorize
 from utils.vectorize import vectorize
 
 
 def main():
     filepath = "files/libcon_annotated (1).xlsx"
     dataframe, column_letters, column_names = load_csv(filepath)
-
+    print(len(dataframe["comment"].tolist()))
     print("Choose your method:")
     print("1. Use LLM")
     print("2. Use Hardcoded Questions")
@@ -34,7 +37,8 @@ def main():
     data_col_name = column_names[ord(data_col) - ord("A")]
     metadata_col_name = column_names[ord(metadata_col) - ord("A")]
 
-    vectorized_result = vectorize(data_col_name, metadata_col_name, dataframe)
+    # vectorized_result = vectorize(data_col_name, metadata_col_name, dataframe)
+    vectorized_result = multithread_vectorize(data_col_name, metadata_col_name, dataframe)
 
 
 if __name__ == "__main__":
