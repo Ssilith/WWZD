@@ -1,44 +1,56 @@
 from config import HEADERS, VECTORIZE_URL
 import umap.umap_ as umap
 import requests
-from tqdm import tqdm
-from multiprocessing import Pool, cpu_count, Manager
+from multiprocessing import Pool, cpu_count
 import csv
+from tqdm import tqdm
+
+lock = None
+queue = None
 
 
-def multithread_vectorize(data_col, metadata_col, dataframe, max_length=512, batch_size=200):
+def init_pool_processes(l, q):
+    global lock
+    global queue
+    lock = l
+    queue = q
+
+
+def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_length=512, batch_size=5):
     data = dataframe[data_col].tolist()
     metadata = dataframe[metadata_col].tolist()
-    num_processes = cpu_count()
-    tasks = []
+    num_processes = min(10,cpu_count())
 
-    # override file
-    with open(
-            "files/vector_metadata.csv", mode="w", newline="", encoding="utf-8"
-    ) as file:
+    with open("files/vector_metadata.csv", mode="w", newline="", encoding="utf-8") as file:
         csv.writer(file, delimiter=";")
 
-    with Manager() as manager:
-        queue = manager.Queue()
-        lock = manager.Lock()
-        number_of_tasks = (len(data) // batch_size + 1)
-        offset = 0
-        for i in range(number_of_tasks):
-            tasks.append((lock, data, metadata, offset, batch_size, queue))
-            offset += 200
-        # Przetwarzanie równoległe z paskiem postępu
-        with Pool(num_processes) as pool:
-            for _ in tqdm(pool.imap_unordered(process_batch_with_args, tasks), total=len(tasks)):
-                pass
+    tasks = []
+    number_of_tasks = (len(data) // batch_size) + (0 if len(data) % batch_size == 0 else 1)
+    offset = 0
+    for i in range(number_of_tasks):
+        tasks.append((data, metadata, offset, batch_size))
+        offset += batch_size
 
-        queue.put(None)
+    with Pool(
+            processes=num_processes,
+            initializer=init_pool_processes,
+            initargs=(l, q)
+    ) as pool:
+        for _ in tqdm(pool.imap_unordered(process_batch_with_args, tasks), total=len(tasks)):
+            pass
+
+    q.put(None)
 
 
 def process_batch_with_args(args):
-    process_batch(*args)
+    return process_batch(*args)
 
 
-def process_batch(lock, data, metadata, offset, batch_size, queue):
+def process_batch(data, metadata, offset, batch_size):
+    global lock
+    global queue
+    print(f"Watek rozpoczal dzialanie offset:  ${offset}")
+
     payload = {
         "application": "similarity",
         "task": "sbert-klej-cdsc-r",
@@ -47,26 +59,23 @@ def process_batch(lock, data, metadata, offset, batch_size, queue):
     response = requests.post(VECTORIZE_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
         vectorized_data = response.json()
-        print("Data was vectorized.")
-
         umap_data = umap_transformer(vectorized_data).tolist()
         combined_data = combine_umap_with_data(umap_data, data, offset)
+
         queue.put(combined_data)
         write_to_csv(lock, combined_data)
+        print(f"Watek skonczyl dzialanie offset:  ${offset}")
 
-        print(combined_data)
-
-        print(f"Results saved to 'vectorized_results.csv'. Offset from ${offset}")
     else:
         raise Exception(f"Error with API request: {response.json()}")
 
 
 def write_to_csv(lock, data):
-    with lock:  # Zabezpieczenie dostępu do pliku
+    with lock:
         with open("files/vector_metadata.csv", 'a', newline="", encoding="utf-8") as file:
             writer = csv.writer(file, delimiter=";")
-            for index, x, y, data in data:
-                writer.writerow([index, x, y, data])
+            for index, x, y, d in data:
+                writer.writerow([index, x, y, d])
 
 
 def umap_transformer(vectors):
