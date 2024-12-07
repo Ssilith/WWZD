@@ -24,4 +24,4 @@ def stream_batch():
     return Response(generate_batches(queue), content_type='application/json')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
