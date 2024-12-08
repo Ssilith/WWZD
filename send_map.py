@@ -6,12 +6,32 @@ from main import init_fun
 
 app = Flask(__name__)
 
+def convert_to_named_fields(batch):
+    result = []
+    for record in batch:
+        result.append({
+            "id": record[0],
+            "x": record[1],
+            "y": record[2],
+            "text": record[3]
+        })
+    return result
+
 def generate_batches(queue):
+    yield '{ "data": ['
+    batch = queue.get()
+    if batch is None:
+        yield ']}'
+        return
+    yield json.dumps(convert_to_named_fields(batch))[1:-1]
     while True:
         batch = queue.get()
         if batch is None:
             break
-        yield json.dumps(batch) + "\n"
+        yield ","
+        yield json.dumps(convert_to_named_fields(batch))[1:-1]
+    yield ']}'
+
 
 @app.route('/umap_data')
 def stream_batch():
