@@ -8,3 +8,7 @@ Celem projektu jest stworzenie interaktywnej wizualizacji 2D tekstów o jednakow
 - Jakub Budziło 259069
 - Julia Gościniak 259164
 - Katarzyna Hajduk 259189
+
+**Dockerfile:**
+- docker build -t flask-backend .
+- docker run -d --name backend -p 5000:5000 flask-backend
