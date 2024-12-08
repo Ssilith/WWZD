@@ -4,7 +4,9 @@ import requests
 from multiprocessing import Pool, cpu_count
 import csv
 from tqdm import tqdm
+import os
 
+vectorize_model = os.getenv("VECTORIZE_MODEL", "sbert-klej-cdsc-r")
 lock = None
 queue = None
 
@@ -16,10 +18,10 @@ def init_pool_processes(l, q):
     queue = q
 
 
-def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_length=512, batch_size=5):
+def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_cores, batch_size=200):
     data = dataframe[data_col].tolist()
     metadata = dataframe[metadata_col].tolist()
-    num_processes = min(10,cpu_count())
+    num_processes = min(max_cores, cpu_count())
 
     with open("files/vector_metadata.csv", mode="w", newline="", encoding="utf-8") as file:
         csv.writer(file, delimiter=";")
@@ -53,7 +55,7 @@ def process_batch(data, metadata, offset, batch_size):
 
     payload = {
         "application": "similarity",
-        "task": "sbert-klej-cdsc-r",
+        "task": vectorize_model,
         "input": data[offset:offset + batch_size],
     }
     response = requests.post(VECTORIZE_URL, headers=HEADERS, json=payload)
