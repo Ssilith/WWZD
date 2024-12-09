@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import * as d3 from 'd3';
+import './InteractiveUMAP.css';
+
 
 const InteractiveUMAP = () => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch data from API
-  useEffect(() => {
+  const fetchData = () => {
+    setLoading(true);
+    setError(null);
+
     fetch('http://localhost:5001/umap_data')
       .then(response => {
         if (!response.ok) {
@@ -23,35 +27,23 @@ const InteractiveUMAP = () => {
         setError(error);
         setLoading(false);
       });
-  }, []); // empty dependency array means this useEffect runs once when component mounts
+  };
 
   // Create visualization with D3 when data is available
   useEffect(() => {
     if (data) {
-      const width = 800;
-      const height = 600;
+      const width = 900;
+      const height = 900;
 
-    //   // Select the SVG container and clear it
-    // const svg = d3.select('#umap-viz')
-    //   .select('svg'); // select the first svg inside umap-viz div
-    // svg.selectAll('*').remove(); // clear all previous elements
-
-    // // Create new SVG container
-    // svg.attr('width', width)
-    //   .attr('height', height);
-
-      // // Create SVG container
+      // Select the SVG container and clear it
       const svg = d3
         .select('#umap-viz')
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .select('svg'); // Select the first SVG inside `#umap-viz` div
+      svg.selectAll('*').remove(); // Clear all previous elements
 
-      // Create zoom behavior
-      // const zoom = d3.zoom().on('zoom', (event) => {
-      //   svg.attr('transform', event.transform);
-      // });
-      // svg.call(zoom);
+      // Create new SVG container
+      svg.attr('width', width)
+        .attr('height', height);
 
       // Create a group to hold points
       const g = svg.append('g');
@@ -60,12 +52,12 @@ const InteractiveUMAP = () => {
       const xScale = d3.scaleLinear()
         .domain([d3.min(data, d => d.x), d3.max(data, d => d.x)])
         .range([0, width])
-        .clamp(true); // Prevent points from leaving the plot area on x-axis
+        .clamp(true);
 
       const yScale = d3.scaleLinear()
         .domain([d3.min(data, d => d.y), d3.max(data, d => d.y)])
         .range([height, 0])
-        .clamp(true); // Prevent points from leaving the plot area on y-axis
+        .clamp(true);
 
       // Draw points
       g.selectAll('circle')
@@ -77,7 +69,6 @@ const InteractiveUMAP = () => {
         .attr('r', 5)
         .attr('fill', 'blue')
         .on('mouseover', function (event, d) {
-          // Show tooltip on hover
           const tooltip = d3.select('#tooltip');
           tooltip
             .style('left', `${event.pageX + 5}px`)
@@ -91,30 +82,38 @@ const InteractiveUMAP = () => {
             `);
         })
         .on('mouseout', () => {
-          // Hide tooltip when not hovering
           d3.select('#tooltip').style('display', 'none');
         });
-    }
-  }, [data]); // Now this effect runs every time `data` updates
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+      svg.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', width)
+        .attr('height', height)
+        .attr('stroke', 'black') // Border color
+        .attr('stroke-width', 8) // Border thickness
+        .attr('fill', 'none') // No fill inside the border
+        .style('pointer-events', 'none'); // Make sure it doesn't block interactions
+    }
+  }, [data]); // Effect runs only when `data` changes
 
   return (
     <div>
       <h1>Interactive UMAP Visualization</h1>
-      <div id="umap-viz" />
+      <button
+        className="button-fetch"
+        onClick={fetchData}
+        disabled={loading}
+      >
+        {loading ? 'Loading...' : 'Fetch UMAP Data'}
+      </button>
+
+      {error && <div style={{ color: 'red' }}>Error: {error.message}</div>}
+      <div id="umap-viz">
+        <svg />
+      </div>
       <div
         id="tooltip"
-        style={{
-          position: 'absolute',
-          display: 'none',
-          backgroundColor: 'white',
-          border: '1px solid black',
-          padding: '10px',
-          borderRadius: '4px',
-          pointerEvents: 'none',
-        }}
       ></div>
     </div>
   );

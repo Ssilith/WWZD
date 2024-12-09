@@ -80,8 +80,16 @@ def write_to_csv(lock, data):
                 writer.writerow([index, x, y, d])
 
 
-def umap_transformer(vectors):
-    reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=42)
+# def umap_transformer(vectors):
+#     reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=42)
+#     return reducer.fit_transform(vectors)
+def umap_transformer(vectors, n_neighbors=5, min_dist=0.05, n_components=2, random_state=42):
+    reducer = umap.UMAP(
+        n_neighbors=n_neighbors,
+        min_dist=min_dist,
+        n_components=n_components,
+        random_state=random_state
+    )
     return reducer.fit_transform(vectors)
 
 

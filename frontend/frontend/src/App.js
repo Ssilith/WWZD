@@ -26,7 +26,7 @@ import InteractiveUMAP from './InteractiveUMAP';
 function App() {
   return (
     <div className="App">
-      <h1>React App Connected to Flask Backend</h1>
+      {/* <h1>React App Connected to Flask Backend</h1> */}
       <InteractiveUMAP />
     </div>
   );
