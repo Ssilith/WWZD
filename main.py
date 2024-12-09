@@ -1,7 +1,7 @@
 import csv
 from asyncio import sleep
 from multiprocessing import Manager
-
+import os
 from utils.load_csv import load_csv
 from utils.identify_columns import (
     identify_columns_with_llm,
@@ -10,6 +10,8 @@ from utils.identify_columns import (
 from utils.multithread_vectorize import multithread_vectorize
 from utils.vectorize import vectorize
 
+batch_size = int(os.getenv("BATCH_SIZE", 200))
+max_cores = int(os.getenv("MAX_CORES", 100))
 
 def init_fun(queue, lock):
     filepath = "files/libcon_annotated (1).xlsx"
@@ -18,7 +20,16 @@ def init_fun(queue, lock):
     metadata_col = 'G'
     data_col_name = column_names[ord(data_col) - ord("A")]
     metadata_col_name = column_names[ord(metadata_col) - ord("A")]
-    multithread_vectorize(data_col_name, metadata_col_name, dataframe, queue, lock)
+
+    multithread_vectorize(
+        data_col_name,
+        metadata_col_name,
+        dataframe,
+        queue,
+        lock,
+        max_cores,
+        batch_size
+    )
 
     # print(len(dataframe["comment"].tolist()))
     # print("Choose your method:")
@@ -42,7 +53,6 @@ def init_fun(queue, lock):
     # data_col = result["data_column"]
 
     # vectorized_result = vectorize(data_col_name, metadata_col_name, dataframe)
-
 
 # if __name__ == "__main__":
 #     manager = Manager()

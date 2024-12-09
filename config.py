@@ -1,6 +1,7 @@
 from utils.load_token import load_token
+import os
 
-API_TOKEN = load_token()
+API_TOKEN = os.getenv("API_KEY",load_token())
 
 HEADERS = {
     "Authorization": f"Bearer {API_TOKEN}",
