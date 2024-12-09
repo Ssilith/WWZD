@@ -1,10 +1,12 @@
 from flask import Flask, Response
 from multiprocessing import Process, Lock, Queue
 import json
+from flask_cors import CORS
 
 from main import init_fun
 
 app = Flask(__name__)
+CORS(app)
 
 def convert_to_named_fields(batch):
     result = []

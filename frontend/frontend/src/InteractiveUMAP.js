@@ -31,7 +31,16 @@ const InteractiveUMAP = () => {
       const width = 800;
       const height = 600;
 
-      // Create SVG container
+    //   // Select the SVG container and clear it
+    // const svg = d3.select('#umap-viz')
+    //   .select('svg'); // select the first svg inside umap-viz div
+    // svg.selectAll('*').remove(); // clear all previous elements
+
+    // // Create new SVG container
+    // svg.attr('width', width)
+    //   .attr('height', height);
+
+      // // Create SVG container
       const svg = d3
         .select('#umap-viz')
         .append('svg')
@@ -39,10 +48,10 @@ const InteractiveUMAP = () => {
         .attr('height', height);
 
       // Create zoom behavior
-      const zoom = d3.zoom().on('zoom', (event) => {
-        svg.attr('transform', event.transform);
-      });
-      svg.call(zoom);
+      // const zoom = d3.zoom().on('zoom', (event) => {
+      //   svg.attr('transform', event.transform);
+      // });
+      // svg.call(zoom);
 
       // Create a group to hold points
       const g = svg.append('g');
