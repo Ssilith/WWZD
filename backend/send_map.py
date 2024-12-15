@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, jsonify
 from multiprocessing import Process, Lock, Queue
 import json
 from flask_cors import CORS
@@ -8,42 +8,24 @@ from main import init_fun
 app = Flask(__name__)
 CORS(app)
 
-def convert_to_named_fields(batch):
-    result = []
-    for record in batch:
-        result.append({
-            "id": record[0],
-            "x": record[1],
-            "y": record[2],
-            "text": record[3]
-        })
-    return result
-
-def generate_batches(queue):
-    yield '{ "data": ['
-    batch = queue.get()
-    if batch is None:
-        yield ']}'
-        return
-    yield json.dumps(convert_to_named_fields(batch))[1:-1]
-    while True:
-        batch = queue.get()
-        if batch is None:
-            break
-        yield ","
-        yield json.dumps(convert_to_named_fields(batch))[1:-1]
-    yield ']}'
-
 
 @app.route('/umap_data')
 def stream_batch():
-    queue = Queue()
-    lock = Lock()
+    combined_list = init_fun()
 
-    p = Process(target=init_fun, args=(queue, lock))
-    p.start()
+    points = []
+    for item in combined_list:
+        index, data, metadata, metadata_number, x, y = item
+        points.append({
+            "index": index,
+            "data": data,
+            "metadata": metadata,
+            "metadata_number": metadata_number,
+            "x": x,
+            "y": y
+        })
+    return jsonify({"points": points})
 
-    return Response(generate_batches(queue), content_type='application/json')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

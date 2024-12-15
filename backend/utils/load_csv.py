@@ -5,7 +5,7 @@ from openpyxl.utils import get_column_letter
 def load_csv(filepath):
     try:
         if filepath.endswith(".csv"):
-            df = pd.read_csv(filepath)
+            df = pd.read_csv(filepath, sep=";")
         elif filepath.endswith(".xlsx"):
             df = pd.read_excel(filepath)
         else:

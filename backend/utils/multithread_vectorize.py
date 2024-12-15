@@ -1,7 +1,7 @@
 from config import HEADERS, VECTORIZE_URL
 import umap.umap_ as umap
 import requests
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool, cpu_count, Lock
 import csv
 from tqdm import tqdm
 import os
@@ -10,18 +10,10 @@ import json
 from utils.load_csv import load_csv
 
 vectorize_model = os.getenv("VECTORIZE_MODEL", "sbert-klej-cdsc-r")
-lock = None
-queue = None
+lock = Lock()
 
 
-def init_pool_processes(l, q):
-    global lock
-    global queue
-    lock = l
-    queue = q
-
-
-def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_cores, batch_size=200):
+def multithread_vectorize(data_col, metadata_col, dataframe, max_cores, batch_size=200):
     batch_size = 200 if batch_size > 200 else batch_size
     data_list = dataframe[data_col].apply(str).tolist()
     metadata_list = dataframe[metadata_col].apply(str).tolist()
@@ -42,8 +34,6 @@ def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_cores, ba
 
     with Pool(
             processes=num_processes,
-            initializer=init_pool_processes,
-            initargs=(l, q)
     ) as pool:
         for _ in tqdm(pool.imap_unordered(process_batch_with_args, tasks), total=len(tasks)):
             pass
@@ -68,8 +58,7 @@ def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_cores, ba
             x,
             y
         ])
-
-    q.put(None)
+    return combined_list
 
 
 def process_batch_with_args(args):
@@ -77,8 +66,6 @@ def process_batch_with_args(args):
 
 
 def process_batch(data, metadata, offset, batch_size, metadata_without_repeats_list):
-    global lock
-    global queue
     print(f"Watek rozpoczal dzialanie offset:  ${offset}")
     task_data = data[offset:offset + batch_size]
     task_metadata = metadata[offset:offset + batch_size]
@@ -100,22 +87,19 @@ def process_batch(data, metadata, offset, batch_size, metadata_without_repeats_l
         combined_data = combine_data(embeddings, task_data, task_metadata, index_of_metadata_list, offset)
         # combined_data = combine_umap_with_data(umap_data, data, offset)
         # queue.put(combined_data)
-        write_to_csv(lock, combined_data)
+        write_to_csv(combined_data)
         print(f"Watek skonczyl dzialanie offset:  ${offset}")
 
     else:
         raise Exception(f"Error with API request: {response.json()}")
 
 
-def write_to_csv(lock, data):
+def write_to_csv(data):
     with lock:
         with open("files/vector_metadata.csv", 'a', newline="", encoding="utf-8") as file:
             writer = csv.writer(file, delimiter=";")
-            print(data[0])
             for row in data:
                 writer.writerow(row)
-                # for index, embedding, data, metadata, index_of_metadata in data:
-                # writer.writerow([index, embedding, data, metadata, index_of_metadata])
 
 
 # def umap_transformer(vectors):
