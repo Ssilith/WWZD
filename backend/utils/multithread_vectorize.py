@@ -5,6 +5,9 @@ from multiprocessing import Pool, cpu_count
 import csv
 from tqdm import tqdm
 import os
+import json
+
+from utils.load_csv import load_csv
 
 vectorize_model = os.getenv("VECTORIZE_MODEL", "sbert-klej-cdsc-r")
 lock = None
@@ -27,7 +30,8 @@ def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_cores, ba
     num_processes = 1
 
     with open("files/vector_metadata.csv", mode="w", newline="", encoding="utf-8") as file:
-        csv.writer(file, delimiter=";")
+        writer = csv.writer(file, delimiter=";")
+        writer.writerow(["index", "embedding", "data", "metadata", "metadata_number"])
 
     tasks = []
     number_of_tasks = (len(data_list) // batch_size) + (0 if len(data_list) % batch_size == 0 else 1)
@@ -43,6 +47,27 @@ def multithread_vectorize(data_col, metadata_col, dataframe, q, l, max_cores, ba
     ) as pool:
         for _ in tqdm(pool.imap_unordered(process_batch_with_args, tasks), total=len(tasks)):
             pass
+    dataframe_embedding, column_letters_embedding, column_names__embedding = load_csv("files/vector_metadata.csv")
+    embedding_list = dataframe_embedding["embedding"].apply(json.loads).tolist()
+    final_data = dataframe_embedding["data"].apply(str).tolist()
+    final_metadata = dataframe_embedding["metadata"].apply(str).tolist()
+    final_index = dataframe_embedding["index"].apply(str).tolist()
+    final_metadata_number = dataframe_embedding["metadata_number"].apply(str).tolist()
+    umap_data = umap_transformer(embedding_list)
+
+    combined_list = []
+    for i in range(len(final_index)):
+        x, y = umap_data[i]
+        x = float(x)
+        y = float(y)
+        combined_list.append([
+            final_index[i],
+            final_data[i],
+            final_metadata[i],
+            final_metadata_number[i],
+            x,
+            y
+        ])
 
     q.put(None)
 
@@ -72,7 +97,7 @@ def process_batch(data, metadata, offset, batch_size, metadata_without_repeats_l
 
         index_of_metadata_list = get_index_of_metadata_list(task_metadata, metadata_without_repeats_list,
                                                             size_of_response)
-        combined_data = combine_data(embeddings, task_data, task_metadata, index_of_metadata_list)
+        combined_data = combine_data(embeddings, task_data, task_metadata, index_of_metadata_list, offset)
         # combined_data = combine_umap_with_data(umap_data, data, offset)
         # queue.put(combined_data)
         write_to_csv(lock, combined_data)
@@ -106,10 +131,10 @@ def umap_transformer(vectors, n_neighbors=5, min_dist=0.05, n_components=2, rand
     return reducer.fit_transform(vectors)
 
 
-def combine_data(embedding, data, metadata, index_of_metadata_set):
+def combine_data(embedding, data, metadata, index_of_metadata_set, offset):
     combined_data = []
     for i in range(len(embedding)):
-        combined_data.append([i])
+        combined_data.append([i + offset])
         combined_data[i].append(embedding[i])
         combined_data[i].append(data[i][0:25])
         combined_data[i].append(metadata[i][0:25])
