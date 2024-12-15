@@ -85,8 +85,6 @@ def process_batch(data, metadata, offset, batch_size, metadata_without_repeats_l
         index_of_metadata_list = get_index_of_metadata_list(task_metadata, metadata_without_repeats_list,
                                                             size_of_response)
         combined_data = combine_data(embeddings, task_data, task_metadata, index_of_metadata_list, offset)
-        # combined_data = combine_umap_with_data(umap_data, data, offset)
-        # queue.put(combined_data)
         write_to_csv(combined_data)
         print(f"Watek skonczyl dzialanie offset:  ${offset}")
 
