@@ -20,7 +20,7 @@ const InteractiveUMAP = () => {
         return response.json();
       })
       .then(data => {
-        setData(data.data); // Store only the points data
+        setData(data.points);
         setLoading(false);
       })
       .catch(error => {
@@ -29,26 +29,28 @@ const InteractiveUMAP = () => {
       });
   };
 
-  // Create visualization with D3 when data is available
   useEffect(() => {
     if (data) {
       const width = 900;
       const height = 900;
 
-      // Select the SVG container and clear it
+
       const svg = d3
         .select('#umap-viz')
-        .select('svg'); // Select the first SVG inside `#umap-viz` div
-      svg.selectAll('*').remove(); // Clear all previous elements
+        .select('svg');
+      svg.selectAll('*').remove();
 
-      // Create new SVG container
+
       svg.attr('width', width)
         .attr('height', height);
 
-      // Create a group to hold points
+
       const g = svg.append('g');
 
-      // Scale points to fit within the viewport
+      const colorScale = d3.scaleSequential(d3.interpolateViridis)
+        .domain([d3.min(data, d => d.metadata_number), d3.max(data, d => d.metadata_number)]);
+
+
       const xScale = d3.scaleLinear()
         .domain([d3.min(data, d => d.x), d3.max(data, d => d.x)])
         .range([0, width])
@@ -59,7 +61,7 @@ const InteractiveUMAP = () => {
         .range([height, 0])
         .clamp(true);
 
-      // Draw points
+
       g.selectAll('circle')
         .data(data)
         .enter()
@@ -67,7 +69,8 @@ const InteractiveUMAP = () => {
         .attr('cx', d => xScale(d.x))
         .attr('cy', d => yScale(d.y))
         .attr('r', 5)
-        .attr('fill', 'blue')
+        // .attr('fill', 'blue')
+        .attr('fill', d => colorScale(d.metadata_number)) // Użyj koloru z palety
         .on('mouseover', function (event, d) {
           const tooltip = d3.select('#tooltip');
           tooltip
@@ -75,10 +78,10 @@ const InteractiveUMAP = () => {
             .style('top', `${event.pageY + 5}px`)
             .style('display', 'block')
             .html(`
-              <strong>ID:</strong> ${d.id}<br/>
-              <strong>X:</strong> ${d.x.toFixed(2)}<br/>
-              <strong>Y:</strong> ${d.y.toFixed(2)}<br/>
-              <strong>Text:</strong> ${d.text}
+              <strong>Index:</strong> ${d.index}<br/>
+              <strong>Metadata:</strong> ${d.metadata}<br/>
+              <strong>Metadata_number:</strong> ${d.metadata_number}<br/>
+              <strong>Text:</strong> ${d.data}
             `);
         })
         .on('mouseout', () => {
@@ -90,12 +93,12 @@ const InteractiveUMAP = () => {
         .attr('y', 0)
         .attr('width', width)
         .attr('height', height)
-        .attr('stroke', 'black') // Border color
-        .attr('stroke-width', 8) // Border thickness
-        .attr('fill', 'none') // No fill inside the border
-        .style('pointer-events', 'none'); // Make sure it doesn't block interactions
+        .attr('stroke', 'black')
+        .attr('stroke-width', 8)
+        .attr('fill', 'none')
+        .style('pointer-events', 'none');
     }
-  }, [data]); // Effect runs only when `data` changes
+  }, [data]);
 
   return (
     <div>
@@ -107,7 +110,6 @@ const InteractiveUMAP = () => {
       >
         {loading ? 'Loading...' : 'Fetch UMAP Data'}
       </button>
-
       {error && <div style={{ color: 'red' }}>Error: {error.message}</div>}
       <div id="umap-viz">
         <svg />
