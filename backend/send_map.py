@@ -9,7 +9,6 @@ from utils.load_csv import load_csv
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route('/umap_data')
 def stream_batch():
     combined_list = init_fun()
@@ -34,6 +33,7 @@ def get_columns():
     dataframe, column_letters, column_names = load_csv(filepath)
 
     return jsonify({"column_names": column_names})
+   
 
 
 if __name__ == '__main__':

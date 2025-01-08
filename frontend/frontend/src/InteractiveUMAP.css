@@ -1,26 +1,26 @@
 .button-fetch {
-    background-color: blue; /* Kolor przycisku zgodny z kolorem kropek */
-    color: white; /* Kolor tekstu */
+    background-color: blue;
+    color: white;
     border: none;
-    padding: 15px 30px; /* Większy przycisk */
+    padding: 15px 30px;
     font-size: 16px;
-    border-radius: 20px; /* Zaokrąglone rogi */
+    border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease; /* Efekt hover */
+    transition: background-color 0.3s ease;
     margin-bottom: 20px;
   }
   
   .button-fetch:hover {
-    background-color: darkblue; /* Ciemniejszy kolor po najechaniu */
+    background-color: darkblue;
   }
   
   .button-fetch:disabled {
-    background-color: blue; /* Kolor dla wyłączonego przycisku */
-    cursor: not-allowed; /* Zmiana kursora */
+    background-color: blue;
+    cursor: not-allowed;
   }
   
   #umap-viz {
-    margin-top: 40px; /* Odstęp od przycisku do mapy */
+    margin-top: 40px;
     margin-bottom: 40px;
   }
 
@@ -32,5 +32,5 @@
     padding: 10px;
     border-radius: 4px;
     pointer-events: none;
-    z-index: 10; /* Ustawienie priorytetu wyświetlania nad innymi elementami */
+    z-index: 10;
   }
