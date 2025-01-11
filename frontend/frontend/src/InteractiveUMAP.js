@@ -215,27 +215,60 @@ const InteractiveUMAP = () => {
     }
   };
 
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     // Zmiana na metodę GET
+  //     const response = await fetch(`http://localhost:5001/umap_data?data_column=${dataCol}&metadata_column=${metadataCol}&neighbours=${neighbours}&min_distance=${minDistance}`);
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
+  //     }
+
+  //     const data = await response.json();
+  //     setData(data.points);
+  //     setShowChat(false);
+  //     setShowFetchDataButton(false);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setError(error);
+  //     setLoading(false);
+  //   }
+  // };
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Zmiana na metodę GET
-      const response = await fetch(`http://localhost:5001/umap_data?data_column=${dataCol}&metadata_column=${metadataCol}&neighbours=${neighbours}&min_distance=${minDistance}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      const response = await fetch('http://localhost:5001/umap_data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data_column: dataCol,
+          metadata_column: metadataCol,
+          neighbours: neighbours,
+          min_distance: minDistance,
+        }),
+      });
 
-      const data = await response.json();
-      setData(data.points);
-      setShowChat(false);
-      setShowFetchDataButton(false);
+      if (!response.ok) {
+        throw new Error('Failed to submit data');
+      }
+      const resultData = await response.json();
+      setData(resultData.points);
       setLoading(false);
+      setShowFetchDataButton(false);
+      setShowChat(false);
     } catch (error) {
       setError(error);
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (data) {
