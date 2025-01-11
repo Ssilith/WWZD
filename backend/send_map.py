@@ -2,6 +2,7 @@ from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from config_vectorize import config_vectorize
 from utils.load_csv import load_csv
+from utils.read_file_and_save import read_file_and_save
 
 app = Flask(__name__)
 CORS(app)
@@ -61,5 +62,21 @@ def get_columns():
     return jsonify({"column_names": column_names})
 
 
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "Brak pliku w żądaniu"}), 400
+
+    file = request.files['file']
+
+    if not file.filename.endswith('.csv') and not file.filename.endswith('.xlsx'):
+        return jsonify({"error": "Przekazano plik, ktory nie jest plikiem CSV albo XLSX"}), 400
+
+    try:
+        read_file_and_save(file)
+        return Response(status=200)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
