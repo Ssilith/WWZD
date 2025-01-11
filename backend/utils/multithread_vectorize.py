@@ -13,7 +13,7 @@ vectorize_model = os.getenv("VECTORIZE_MODEL", "sbert-klej-cdsc-r")
 lock = Lock()
 
 
-def multithread_vectorize(data_col, metadata_col, dataframe, max_cores, batch_size=200):
+def multithread_vectorize(dataframe, data_col, metadata_col, neighbours, min_distance, max_cores=1, batch_size=200):
     batch_size = 200 if batch_size > 200 else batch_size
     data_list = dataframe[data_col].apply(str).tolist()
     metadata_list = dataframe[metadata_col].apply(str).tolist()
@@ -43,7 +43,7 @@ def multithread_vectorize(data_col, metadata_col, dataframe, max_cores, batch_si
     final_metadata = dataframe_embedding["metadata"].apply(str).tolist()
     final_index = dataframe_embedding["index"].apply(str).tolist()
     final_metadata_number = dataframe_embedding["metadata_number"].apply(str).tolist()
-    umap_data = umap_transformer(embedding_list)
+    umap_data = umap_transformer(embedding_list, neighbours, min_distance)
 
     combined_list = []
     for i in range(len(final_index)):

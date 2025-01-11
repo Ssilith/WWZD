@@ -13,19 +13,20 @@ batch_size = int(os.getenv("BATCH_SIZE", 200))
 max_cores = int(os.getenv("MAX_CORES", 100))
 
 
-def init_fun():
-    filepath = "files/libcon_annotated (1).xlsx"
-    dataframe, column_letters, column_names = load_csv(filepath)
-    data_col = 'F'
-    metadata_col = 'G'
-    data_col_name = column_names[ord(data_col) - ord("A")]
-    metadata_col_name = column_names[ord(metadata_col) - ord("A")]
-
+def config_vectorize(dataframe, data_col_name, metadata_col_name, neighbours, min_distance):
+    # filepath = "files/libcon_annotated (1).xlsx"
+    # dataframe, column_letters, column_names = load_csv(filepath)
+    # data_col = 'F'
+    # metadata_col = 'G'
+    # data_col_name = column_names[ord(data_col) - ord("A")]
+    # metadata_col_name = column_names[ord(metadata_col) - ord("A")]
 
     return multithread_vectorize(
+        dataframe,
         data_col_name,
         metadata_col_name,
-        dataframe,
+        neighbours,
+        min_distance,
         max_cores,
         batch_size
     )
