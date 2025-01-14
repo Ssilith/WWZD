@@ -56,6 +56,41 @@ const InteractiveUMAP = () => {
     }
   };
 
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      console.log(`Selected file: ${file.name}`);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch('http://localhost:5001/upload_file', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const contentType = response.headers.get('Content-Type');
+          if (contentType && contentType.includes('application/json')) {
+            const result = await response.json();
+            console.log("File uploaded successfully!", result);
+          } else {
+            const text = await response.text();
+            console.error("Server returned non-JSON response:", text);
+          }
+        } else {
+          console.error(`Error uploading file: ${response.status} ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error("Error connecting to the server:", error);
+      }
+    }
+  };
+
+
+
+
   const handleUserInput = (inputText) => {
     let newMessage = { sender: 'user', text: inputText };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -268,7 +303,7 @@ const InteractiveUMAP = () => {
       setLoading(false);
     }
   };
-  
+
 
   useEffect(() => {
     if (data) {
@@ -346,19 +381,31 @@ const InteractiveUMAP = () => {
         />
       ) : (
         <div>
-        {showFetchDataButton && (
-          <button className="button-fetch" onClick={handleFetchColumns}>
-            Fetch Columns
-          </button>
-        )}
-      </div>
+          {showFetchDataButton && (
+            <>
+              <button className="button-fetch" onClick={handleFetchColumns}>
+                Fetch Columns
+              </button>
+              <button className="button-upload" onClick={() => document.getElementById('file-upload').click()}>
+                <i className="fa fa-paperclip" aria-hidden="true"></i> Upload File
+              </button>
+              <input
+                id="file-upload"
+                type="file"
+                className="input-file"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }} // Ukrycie inputa
+              />
+            </>
+          )}
+        </div>
       )}
       {error && <div style={{ color: 'red' }}>Error: {error.message}</div>}
       <div id="umap-viz">
         <svg />
       </div>
       <div id="tooltip"></div>
-      
+
     </div>
   );
 };
