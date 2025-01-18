@@ -5,7 +5,7 @@ import pandas as pd
 import csv
 import os
 
-vectorize_model = os.getenv("VECTORIZE_MODEL", "sbert-klej-cdsc-r")
+vectorize_model = os.getenv("VECTORIZE_MODEL", "bge-m3")
 
 
 def vectorize(data_col, metadata_col, dataframe, max_length=512):
