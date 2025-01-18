@@ -1,0 +1,26 @@
+.divider-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 502px;
+    height: 18px;
+  }
+  
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: #e7e7e7;
+  }
+  
+  .divider-text {
+    color: #6d6d6d;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: center;
+  }
+  

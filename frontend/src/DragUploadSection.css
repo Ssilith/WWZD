@@ -1,0 +1,170 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f7f7fc;
+  overflow: hidden;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  width: 400px;
+  background-color: #ffffff;
+  padding: 12px;
+  box-sizing: border-box;
+  flex-direction: column;
+  border: 1px solid #6d6d6d;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden; /* Ukrywa elementy wychodzące poza kontener */
+}
+
+.container {
+  width: 30%;
+  min-width: 306px;
+  height: 160px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background-color: #ffffff;
+  border: 1px dashed #635bff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  position: relative;
+
+
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.uploadText {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0b0b0b;
+}
+
+.browseButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #635bff;
+  cursor: pointer;
+}
+
+.browseButton:hover {
+  text-decoration: underline;
+}
+
+.uploadButton {
+  padding: 6px 80px;
+  background-color: #635bff;
+  border-radius: 8px;
+  border: none;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin: 17px;
+  margin-top: 160px;
+  position: relative;
+}
+
+.uploadButton:hover {
+  background-color: #524ccc;
+}
+
+.helperText {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #6d6d6d;
+  text-align: center;
+}
+
+.title {
+  font-size: 24px;
+  /* Rozmiar czcionki tytułu */
+  font-weight: bold;
+  /* Pogrubienie tytułu */
+  margin-bottom: 40px;
+  /* Odstęp między tytułem a resztą elementów */
+  color: #6d6d6d;
+  /* Kolor tytułu */
+}
+
+.icon-bottom-left {
+  position: absolute;
+  bottom: 20px;  /* Ustawiamy 20px od dołu */
+  left: 20px;    /* Ustawiamy 20px od lewej */
+  z-index: 10;   /* Upewniamy się, że ikona będzie na wierzchu */
+  
+}
+
+.icon-bottom-left img {
+  width: 360px;   /* Możesz dostosować rozmiar ikony */
+  height: 360px;
+}
+
+.file-details {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Odstęp między nazwą pliku a ikonką usuwania */
+}
+
+.file-details p {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #6d6d6d;
+}
+
+.remove-icon {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6b6b;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.remove-icon:hover {
+  color: #e05a5a;
+  transform: scale(1.2);
+}
+
+.error-text {
+  color: #ff6b6b;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  margin-top: 8px;
+}

@@ -34,3 +34,25 @@
     pointer-events: none;
     z-index: 10;
   }
+
+  .button-upload {
+    background-color: blue;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+  }
+  
+  .button-upload:hover {
+    background-color: darkblue;
+  }
+  
+  .button-upload:disabled {
+    background-color: blue;
+    cursor: not-allowed;
+  }
+  
