@@ -3,12 +3,13 @@ import requests
 import re
 
 
-def identify_columns_with_llm(dialog, existing_columns, columns_names):
-        mapping = dict(zip(columns_names, existing_columns))
+def identify_columns_with_llm(dialog, column_names):
+        column_label = generate_excel_labels(len(column_names))
+        map_of_columns = dict(zip(column_label, column_names))
         messages = [
             {
                 f"role": "system",
-                f"content": f" From the available columns with names: {mapping}"
+                f"content": f" From the available columns with names: {map_of_columns}"
                            f" You are discussing with the user about selecting columns from the available options"
                            f" they want to use. They should receive one data_column and one metadata_column"
                            f" from the chosen options. Return the parameters by full name of columns"
@@ -50,13 +51,30 @@ def identify_columns_with_llm(dialog, existing_columns, columns_names):
                 data_col = result.get("data_column")
                 metadata_col = result.get("metadata_column")
                 text_col = result.get("text")
-                combined_message = f"data_column: {data_col}, metadata_column: {metadata_col}text: {text_col}"
-                dialog.append(combined_message)
+                return ({
+                    "data_column": data_col,
+                    "metadata_column": metadata_col,
+                    "text": text_col
+                })
             except Exception as e:
                 raise Exception(e)
 
         else:
             raise Exception("Error with chat completion:", response.json())
+
+
+def generate_list(n):
+    result = ""
+    while True:
+        n, r = divmod(n, 26)
+        result = chr(r + ord('A')) + result
+        if n == 0:
+            break
+    return result
+
+
+def generate_excel_labels(length):
+    return [generate_list(i) for i in range(length)]
 
 
 def identify_columns_hardcoded(existing_columns, columns_names):

@@ -1,6 +1,7 @@
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from config_vectorize import config_vectorize
+from utils.identify_columns import identify_columns_with_llm
 from utils.load_csv import load_csv
 from utils.read_file_and_save import read_file_and_save
 
@@ -21,13 +22,7 @@ def stream_batch():
         "min_distance": (int, float)
     }
 
-    errors = []
-    for param, expected_types in required_params.items():
-        if param not in data:
-            errors.append(f"Brak parametru: {param}")
-        elif not isinstance(data[param], expected_types):
-            errors.append(
-                f"Nieprawidłowy typ parametru: {param}. Oczekiwano {expected_types}, otrzymano {type(data[param]).__name__}")
+    errors = validation(data, required_params)
 
     if errors:
         return jsonify({"errors": errors}), 400
@@ -78,5 +73,39 @@ def upload_file():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+@app.route('/llm_dialog', methods=['POST'])
+def llm_dialog():
+    data = request.get_json()
+
+    required_params = {
+        "column_names": list[str],
+        "messages": list[str],
+    }
+
+    # errors = validation(data, required_params)
+    #
+    # if errors:
+    #     return jsonify({"errors": errors}), 400
+    try:
+        x = identify_columns_with_llm(data["messages"], data["column_names"])
+        return jsonify(x), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+def validation(data, required_params):
+    errors = []
+    for param, expected_types in required_params.items():
+        if param not in data:
+            errors.append(f"Brak parametru: {param}")
+        elif not isinstance(data[param], expected_types):
+            errors.append(
+                f"Nieprawidłowy typ parametru: {param}. Oczekiwano {expected_types}, otrzymano {type(data[param]).__name__}")
+    return errors
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
