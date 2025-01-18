@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import DataFetcher from './DataFetcher';
 import InteractiveUMAP from './InteractiveUMAP';
+import DragUploadSection from './DragUploadSection';
 
 // function App() {
 //   return (
@@ -27,7 +28,8 @@ function App() {
   return (
     <div className="App">
       {/* <h1>React App Connected to Flask Backend</h1> */}
-      <InteractiveUMAP />
+      <InteractiveUMAP/>
+      {/* <DragUploadSection/> */}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import ChatDialog from './ChatDialog';
 import './InteractiveUMAP.css';
+import DragUploadSection from './DragUploadSection.js';
 
 const InteractiveUMAP = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
@@ -381,6 +382,7 @@ const InteractiveUMAP = () => {
         />
       ) : (
         <div>
+          {/* <DragUploadSection></DragUploadSection> */}
           {showFetchDataButton && (
             <>
               <button className="button-fetch" onClick={handleFetchColumns}>
