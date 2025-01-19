@@ -1,17 +1,20 @@
 .chat-dialog {
-  border: 1px solid #e0e0e0;
-  border-radius: 16px;
-  width: 500px; 
-  height: 600px; 
-  margin: 20px auto;
+  width: 500px;
+  min-height: 600px;
+  max-height: 600px; /* Stała wysokość okna */
   display: flex;
   flex-direction: column;
   background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden; /* Zapobiega wyciekom zawartości */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Arial', sans-serif;
+  position: relative;
   overflow: hidden;
+  
 }
 
+/* Chat header */
 .chat-header {
   background: #6200ee;
   color: white;
@@ -26,19 +29,21 @@
 .chat-messages {
   flex: 1;
   padding: 16px;
-  overflow-y: auto;
+  overflow-y: auto; /* Włącza przewijanie tylko w tym obszarze */
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: auto;
+  /* max-height: calc(100% - 100px); Automatyczne dopasowanie do wysokości czatu */
 }
 
+/* Single message styles */
 .chat-message {
+  max-width: 75%;
+  word-wrap: break-word; /* Zapobiega wyciekom zawartości */
   padding: 12px;
   border-radius: 16px;
-  max-width: 75%;
-  word-wrap: break-word;
-  text-align: left;
-  line-height: 1.4
+  line-height: 1.4;
 }
 
 .chat-message.user {
@@ -53,11 +58,13 @@
   color: black;
 }
 
+/* Input area */
 .chat-input {
   display: flex;
   padding: 16px;
   gap: 8px;
   border-top: 1px solid #ddd;
+  background: #ffffff;
 }
 
 .chat-input input {
@@ -66,6 +73,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
+  outline: none;
 }
 
 .chat-input input::placeholder {

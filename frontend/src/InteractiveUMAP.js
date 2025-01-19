@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import ChatDialog from './ChatDialog';
+import Header from './components/Header.js';
+import DragUploadSection from './components/DragUploadSection.js';
+import ChatDialog from './components/ChatDialog.js';
 import './InteractiveUMAP.css';
-import DragUploadSection from './DragUploadSection.js';
+import './components/DragUploadSection.css'
+
 
 const InteractiveUMAP = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
@@ -18,13 +21,11 @@ const InteractiveUMAP = () => {
   const [error, setError] = useState(null);
   const [showChat, setShowChat] = useState(true);
   const [showFetchDataButton, setShowFetchDataButton] = useState(true);
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
 
-  const hardcodedColumns = [
-    "ID", "source", "affil", "lang", "type", "comment", "upvotes", "irony_sarcasm", "anger", "sadness",
-    "stupidity", "personas", "places", "disaster", "rhetorical_q", "personal", "collective", "agency",
-    "freedom", "migration", "numbers", "sources", "threat", "morality", "failure", "illegal", "fear", "trash",
-    "lies", "youth", "god", "Unnamed: 31"
-  ];
+  const handleFileUploadSuccess = () => {
+    setIsFileUploaded(true);
+  };
 
   const handleColumnSelection = (inputText) => {
     const normalizedInput = inputText.trim().toLowerCase();
@@ -56,41 +57,6 @@ const InteractiveUMAP = () => {
       ]);
     }
   };
-
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      console.log(`Selected file: ${file.name}`);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      try {
-        const response = await fetch('http://localhost:5001/upload_file', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.ok) {
-          const contentType = response.headers.get('Content-Type');
-          if (contentType && contentType.includes('application/json')) {
-            const result = await response.json();
-            console.log("File uploaded successfully!", result);
-          } else {
-            const text = await response.text();
-            console.error("Server returned non-JSON response:", text);
-          }
-        } else {
-          console.error(`Error uploading file: ${response.status} ${response.statusText}`);
-        }
-      } catch (error) {
-        console.error("Error connecting to the server:", error);
-      }
-    }
-  };
-
-
-
 
   const handleUserInput = (inputText) => {
     let newMessage = { sender: 'user', text: inputText };
@@ -251,28 +217,6 @@ const InteractiveUMAP = () => {
     }
   };
 
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   setError(null);
-
-  //   try {
-  //     // Zmiana na metodę GET
-  //     const response = await fetch(`http://localhost:5001/umap_data?data_column=${dataCol}&metadata_column=${metadataCol}&neighbours=${neighbours}&min_distance=${minDistance}`);
-  //     if (!response.ok) {
-  //       throw new Error('Network response was not ok');
-  //     }
-
-  //     const data = await response.json();
-  //     setData(data.points);
-  //     setShowChat(false);
-  //     setShowFetchDataButton(false);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setError(error);
-  //     setLoading(false);
-  //   }
-  // };
-
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -370,34 +314,26 @@ const InteractiveUMAP = () => {
     }
   }, [data]);
 
+
   return (
     <div>
-      <h1>Interactive UMAP Visualization</h1>
+      <Header></Header>
       {loading ? (
         <div>Loading...</div>
       ) : isDataFetched && showChat ? (
-        <ChatDialog
-          onSubmit={handleUserInput}
-          messages={messages}
-        />
+        <div className="page-container">
+          <ChatDialog onSubmit={handleUserInput} messages={messages} />
+        </div>
       ) : (
-        <div>
-          {/* <DragUploadSection></DragUploadSection> */}
+        <div className='app-container'>
           {showFetchDataButton && (
             <>
-              <button className="button-fetch" onClick={handleFetchColumns}>
-                Fetch Columns
-              </button>
-              <button className="button-upload" onClick={() => document.getElementById('file-upload').click()}>
-                <i className="fa fa-paperclip" aria-hidden="true"></i> Upload File
-              </button>
-              <input
-                id="file-upload"
-                type="file"
-                className="input-file"
-                onChange={handleFileUpload}
-                style={{ display: 'none' }} // Ukrycie inputa
-              />
+              {!isFileUploaded && <DragUploadSection onFileUploaded={handleFileUploadSuccess} />}
+              {isFileUploaded && !isDataFetched && (
+                <button className="button-fetch" onClick={handleFetchColumns}>
+                  Fetch Columns
+                </button>
+              )}
             </>
           )}
         </div>

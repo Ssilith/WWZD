@@ -1,13 +1,4 @@
-body {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f7f7fc;
-  overflow: hidden;
-}
-
-.wrapper {
+/* .wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,7 +11,25 @@ body {
   border: 1px solid #6d6d6d;
   border-radius: 12px;
   position: relative;
-  overflow: hidden; /* Ukrywa elementy wychodzące poza kontener */
+} */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  /* height: 500px;    <--- do rozważenia usunięcia */
+  /* width: 400px;     <--- do rozważenia usunięcia */
+
+  max-width: 400px;       /* Lub w ogóle usuń, jeśli chcesz bardziej elastycznie */
+  background-color: #ffffff;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #6d6d6d;
+  border-radius: 12px;
+  position: relative;
+
 }
 
 .container {
@@ -114,32 +123,28 @@ body {
 
 .title {
   font-size: 24px;
-  /* Rozmiar czcionki tytułu */
   font-weight: bold;
-  /* Pogrubienie tytułu */
   margin-bottom: 40px;
-  /* Odstęp między tytułem a resztą elementów */
   color: #6d6d6d;
-  /* Kolor tytułu */
 }
 
 .icon-bottom-left {
   position: absolute;
-  bottom: 20px;  /* Ustawiamy 20px od dołu */
-  left: 20px;    /* Ustawiamy 20px od lewej */
-  z-index: 10;   /* Upewniamy się, że ikona będzie na wierzchu */
+  bottom: 20px;
+  left: 20px;
+  z-index: 10;
   
 }
 
 .icon-bottom-left img {
-  width: 360px;   /* Możesz dostosować rozmiar ikony */
+  width: 360px;
   height: 360px;
 }
 
 .file-details {
   display: flex;
   align-items: center;
-  gap: 12px; /* Odstęp między nazwą pliku a ikonką usuwania */
+  gap: 12px;
 }
 
 .file-details p {
