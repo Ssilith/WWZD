@@ -89,7 +89,7 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
 
       if (response.ok) {
         setFileUploaded(true);
-        alert("File uploaded successfully!");
+        // alert("File uploaded successfully!");
 
         if (onFileUploaded) {
           onFileUploaded();

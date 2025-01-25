@@ -508,7 +508,7 @@ const InteractiveUMAP = () => {
 
       {/* 2. Wybór trybu rozmowy */}
       {isFileUploaded && !loading && !showDialog && !data && (
-        <div style={{ marginTop: '20px' }}>
+        <div className="radio-group">
           <p>Wybierz formę rozmowy:</p>
           <label>
             <input

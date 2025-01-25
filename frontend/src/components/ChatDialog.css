@@ -15,7 +15,7 @@
 }
 
 .chat-header {
-  background: #6200ee;
+  background: #635bff;
   color: white;
   text-align: center;
   padding: 16px;
@@ -45,7 +45,7 @@
 
 .chat-message.user {
   align-self: flex-end;
-  background: #6200ee;
+  background: #635bff;
   color: white;
 }
 
@@ -79,7 +79,7 @@
 
 .chat-input button {
   padding: 12px 20px;
-  background: #6200ee;
+  background: #635bff;
   color: white;
   border: none;
   border-radius: 8px;
