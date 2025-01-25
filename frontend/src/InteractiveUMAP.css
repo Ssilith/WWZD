@@ -64,14 +64,6 @@
     margin-top: 90px;
   }
 
-  /* h1 {
-    margin: 0 0 20px;
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-    color: #333;
-  } */
-
   .app-container {
     display: flex;
     justify-content: center;
@@ -81,6 +73,6 @@
   }
 
   .main-content {
-    margin-top: 80px; /* Wysokość Header */
+    margin-top: 80px; 
   }
   

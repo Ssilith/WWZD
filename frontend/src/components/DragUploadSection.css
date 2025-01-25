@@ -1,28 +1,9 @@
-/* .wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 500px;
-  width: 400px;
-  background-color: #ffffff;
-  padding: 12px;
-  box-sizing: border-box;
-  flex-direction: column;
-  border: 1px solid #6d6d6d;
-  border-radius: 12px;
-  position: relative;
-} */
-
 .wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  /* height: 500px;    <--- do rozważenia usunięcia */
-  /* width: 400px;     <--- do rozważenia usunięcia */
-
-  max-width: 400px;       /* Lub w ogóle usuń, jeśli chcesz bardziej elastycznie */
+  max-width: 400px;
   background-color: #ffffff;
   padding: 12px;
   box-sizing: border-box;

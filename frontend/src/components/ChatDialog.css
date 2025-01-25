@@ -1,20 +1,19 @@
 .chat-dialog {
   width: 500px;
   min-height: 600px;
-  max-height: 600px; /* Stała wysokość okna */
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
-  overflow: hidden; /* Zapobiega wyciekom zawartości */
+  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
   
 }
 
-/* Chat header */
 .chat-header {
   background: #6200ee;
   color: white;
@@ -29,18 +28,16 @@
 .chat-messages {
   flex: 1;
   padding: 16px;
-  overflow-y: auto; /* Włącza przewijanie tylko w tym obszarze */
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
   overflow: auto;
-  /* max-height: calc(100% - 100px); Automatyczne dopasowanie do wysokości czatu */
 }
 
-/* Single message styles */
 .chat-message {
   max-width: 75%;
-  word-wrap: break-word; /* Zapobiega wyciekom zawartości */
+  word-wrap: break-word;
   padding: 12px;
   border-radius: 16px;
   line-height: 1.4;
@@ -58,7 +55,6 @@
   color: black;
 }
 
-/* Input area */
 .chat-input {
   display: flex;
   padding: 16px;
