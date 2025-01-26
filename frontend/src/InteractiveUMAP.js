@@ -359,6 +359,7 @@ import HardcodedChat from './HardcodedChat';
 import LLMChat from './LLMChat';
 import './InteractiveUMAP.css';
 import ChatDialog from './components/ChatDialog';
+import Spinner from './components/Spinner';
 
 const InteractiveUMAP = () => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -548,9 +549,10 @@ const InteractiveUMAP = () => {
 
       {/* 4. "Loading..." */}
       {loading && (
-        <div style={{ marginTop: '20px', fontSize: '18px', textAlign: 'center' }}>
-          Wczytywanie danych...
-        </div>
+        // <div style={{ marginTop: '20px', fontSize: '18px', textAlign: 'center' }}>
+        //   Wczytywanie danych...
+        // </div>
+        <Spinner/>
       )}
 
       {/* 5. Wizualizacja */}

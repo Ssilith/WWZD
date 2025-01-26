@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import './DragUploadSection.css';
 import vectorPath from '../assets/Vector.svg';
 import uploadFile from '../assets/undraw_upload_cucu.svg';
+import Spinner from "./Spinner";
+
 
 const DragUploadSection = ({ onDrop, onFileUploaded }) => {
   const fileInputRef = useRef(null);
@@ -107,9 +109,10 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
   return (
     <div>
       {isLoading ? (
-        <div className="loading-container">
-          <h2>Loading...</h2>
-        </div>
+        // <div className="loading-container">
+        //   <h2>Loading...</h2>
+        // </div>
+        <Spinner />
       ) : showUploadSection ? (
         <div>
           <h2>Aplikacja do wizualizacji danych</h2>
