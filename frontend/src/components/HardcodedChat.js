@@ -1,6 +1,6 @@
 // components/HardcodedChat.js
 import React, { useState } from 'react';
-import ChatDialog from './components/ChatDialog';
+import ChatDialog from './ChatDialog';
 
 const HardcodedChat = ({ columns, onSubmit }) => {
   // Hardcoded flow: kroki 1..8

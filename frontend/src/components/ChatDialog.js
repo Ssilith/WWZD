@@ -43,12 +43,12 @@ const ChatDialog = ({ onSubmit, messages }) => {
       <div className="chat-input">
         <input
           type="text"
-          placeholder="Type your message..."
+          placeholder="Wpisz swoją wiadomość..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button onClick={handleSend}>Send</button>
+        <button onClick={handleSend}>Wyślij</button>
       </div>
     </div>
   );

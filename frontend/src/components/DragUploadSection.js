@@ -91,16 +91,15 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
 
       if (response.ok) {
         setFileUploaded(true);
-        // alert("File uploaded successfully!");
-
+        
         if (onFileUploaded) {
           onFileUploaded();
         }
       } else {
-        alert("Failed to upload file. Please try again.");
+        alert("Nie udało się przesłać pliku. Proszę spróbować ponownie.");
       }
     } catch (error) {
-      alert("Error connecting to the server. Please try again later.");
+      alert("Błąd połączenia z serwerem. Proszę spróbować ponownie później.");
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +119,7 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
             <img src={uploadFile} alt="Vector Icon" />
           </div>
           <div className="wrapper">
-            <h2 className="title">Upload your file here!</h2>
+            <h2 className="title">Dodaj swój plik tutaj!</h2>
             <div
               className="container"
               onDragOver={handleDragOver}
@@ -129,12 +128,12 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
               <img src={vectorPath} alt="Vector Icon" />
               <div className="textContainer">
                 <div className="uploadText">
-                  <span>Drag your file or </span>
+                  <span>Przeciągnij plik lub </span>
                   <button
                     className="browseButton"
                     onClick={handleBrowseClick}
                   >
-                    browse
+                    wybierz
                   </button>
                   <input
                     type="file"
@@ -147,7 +146,7 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
               </div>
             </div>
             <div className="file-info">
-              <h3>Added File:</h3>
+              <h3>Dodany plik:</h3>
               {file ? (
                 <div className="file-details">
                   <p>
@@ -158,13 +157,13 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
                   </span>
                 </div>
               ) : (
-                <p>No file added yet.</p>
+                <p>Brak dodanych plików.</p>
               )}
               {error && <p className="error-text">{error}</p>}
             </div>
 
             <button className="uploadButton" onClick={handleUploadClick}>
-              Upload
+              Załaduj
             </button>
           </div>
         </div>
@@ -180,7 +179,7 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
 
 DragUploadSection.defaultProps = {
   onDrop: () => {},
-  onFileUploaded: () => {}  // Domyślnie pusta funkcja
+  onFileUploaded: () => {}
 };
 
 
