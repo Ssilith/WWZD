@@ -33,8 +33,12 @@ def stream_batch():
     if any(col not in column_names for col in [data["data_column"], data["metadata_column"]]):
         return jsonify({"errors": "column does not exist in file"}), 400
 
-    combined_list = config_vectorize(dataframe, data["data_column"], data["metadata_column"], data["neighbours"],
+    try:
+        combined_list = config_vectorize(dataframe, data["data_column"], data["metadata_column"], data["neighbours"],
                                      data["min_distance"])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
 
     points = []
     for item in combined_list:
