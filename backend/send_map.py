@@ -95,6 +95,31 @@ def llm_dialog():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route('/get_column_by_index', methods=['POST'])
+def get_column_by_index():
+
+    data = request.get_json()
+
+    required_params = {
+        "index": int,
+        "column_name": str,
+    }
+    errors = validation(data, required_params)
+
+    if errors:
+        return jsonify({"errors": errors}), 400
+
+    try:
+        dataframe, column_letters, column_names = load_csv(filepath)
+        column_data = dataframe.loc[data["index"], data["column_name"]]
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify({
+        "column_data": column_data
+    })
+
 
 def validation(data, required_params):
     errors = []
