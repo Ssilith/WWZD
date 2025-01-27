@@ -84,7 +84,7 @@ const InteractiveUMAP = () => {
   useEffect(() => {
     if (data) {
       const width = 900;
-      const height = 900;
+      const height = 600;
 
       const svg = d3
         .select('#umap-viz')
