@@ -102,8 +102,6 @@ const LLMChat = ({ columns, onSubmit }) => {
     // }
     if (responseData.data_column && responseData.metadata_column) {
       const { data_column: newDataColumn, metadata_column: newMetaColumn } = responseData;
-
-      // Sprawdź, czy proponowane kolumny różnią się od ostatnich
       if (
         lastSuggestedColumns.dataColumn !== newDataColumn ||
         lastSuggestedColumns.metaColumn !== newMetaColumn

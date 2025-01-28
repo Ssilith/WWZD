@@ -8,18 +8,16 @@ import './InteractiveUMAP.css';
 import ChatDialog from './components/ChatDialog';
 import Spinner from './components/Spinner';
 
+
+
 const InteractiveUMAP = () => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const [columns, setColumns] = useState([]); // nazwy kolumn z backendu
+  const [columns, setColumns] = useState([]);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  // Ten stan określa, czy po pobraniu kolumn włączamy chat.
+  const [dataCol, setDataCol] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
-
-
-  // Rodzaj czatu (hardcoded vs llm)
   const [chatMode, setChatMode] = useState(null);
 
   const handleFileUploadSuccess = () => {
@@ -40,7 +38,7 @@ const InteractiveUMAP = () => {
       }
       const data = await response.json();
       setColumns(data.column_names || []);
-      setShowDialog(true); // Wyświetl okno dialogowe po pobraniu danych
+      setShowDialog(true);
     } catch (err) {
       setError(err);
     } finally {
@@ -48,7 +46,6 @@ const InteractiveUMAP = () => {
     }
   };
 
-  // Odbiera dane parametry (col, metaCol, neigh, dist) i pobiera UMAP
   const fetchUMAPData = async (dataCol, metadataCol, neighbours, minDistance) => {
     setLoading(true);
     setError(null);
@@ -73,6 +70,7 @@ const InteractiveUMAP = () => {
 
       const resultData = await response.json();
       setData(resultData.points);
+      setDataCol(dataCol);
       setShowDialog(false);
     } catch (err) {
       setError(err);
@@ -131,7 +129,47 @@ const InteractiveUMAP = () => {
         })
         .on('mouseout', () => {
           d3.select('#tooltip').style('display', 'none');
+        })
+        .on('click', async function (event, d) {
+          if (!dataCol) {
+            alert('Nie wybrano kolumny danych. Ustaw parametr dataCol przed kliknięciem punktu.');
+            return;
+          }
+
+          try {
+            console.log('Request body:', {
+              index: parseInt(d.index, 10),
+              column_name: dataCol,
+            });
+            const response = await fetch('http://localhost:5001/get_column_by_index', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                index: parseInt(d.index, 10),
+                column_name: dataCol
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error('Nie udało się pobrać danych z serwera.');
+            }
+
+            const result = await response.json();
+            const tooltip = d3.select('#tooltip');
+            tooltip
+              .style('left', `${event.pageX + 5}px`)
+              .style('top', `${event.pageY + 5}px`)
+              .style('display', 'block')
+              .html(`
+        <strong>Dane:</strong><br/>
+        ${result.column_data}
+      `);
+          } catch (err) {
+            console.error('Błąd połączenia:', err);
+            alert('Błąd: nie udało się pobrać dodatkowych informacji.');
+          }
         });
+      ;
 
       svg.append('rect')
         .attr('x', 0)
@@ -188,10 +226,25 @@ const InteractiveUMAP = () => {
 
       {/* 3. Okno dialogowe */}
       {!loading && showDialog && chatMode === 'hardcoded' && (
-        <HardcodedChat columns={columns} onSubmit={fetchUMAPData} />
+        // <HardcodedChat columns={columns} onSubmit={fetchUMAPData} />
+        <HardcodedChat
+          columns={columns}
+          onSubmit={(selectedDataCol, metadataCol, neighbors, minDistance) => {
+            setDataCol(selectedDataCol); // Ustawienie dataCol
+            fetchUMAPData(selectedDataCol, metadataCol, neighbors, minDistance); // Wywołanie analizy UMAP
+          }}
+        />
       )}
       {!loading && showDialog && chatMode === 'llm' && (
-       <LLMChat columns={columns} onSubmit={fetchUMAPData} />
+        // <LLMChat columns={columns} onSubmit={fetchUMAPData} />
+        <LLMChat
+          columns={columns}
+          onSubmit={(selectedDataCol, metadataCol, neighbors, minDistance) => {
+            setDataCol(selectedDataCol); // Ustawienie dataCol
+            fetchUMAPData(selectedDataCol, metadataCol, neighbors, minDistance); // Wywołanie analizy UMAP
+          }}
+        />
+
       )}
 
       {/* 4. "Loading..." */}
@@ -199,7 +252,7 @@ const InteractiveUMAP = () => {
         // <div style={{ marginTop: '20px', fontSize: '18px', textAlign: 'center' }}>
         //   Wczytywanie danych...
         // </div>
-        <Spinner/>
+        <Spinner />
       )}
 
       {/* 5. Wizualizacja */}

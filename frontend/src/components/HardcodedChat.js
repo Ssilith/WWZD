@@ -1,9 +1,8 @@
-// components/HardcodedChat.js
+
 import React, { useState } from 'react';
 import ChatDialog from './ChatDialog';
 
 const HardcodedChat = ({ columns, onSubmit }) => {
-  // Hardcoded flow: kroki 1..8
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
