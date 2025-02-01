@@ -108,9 +108,6 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
   return (
     <div>
       {isLoading ? (
-        // <div className="loading-container">
-        //   <h2>Loading...</h2>
-        // </div>
         <Spinner />
       ) : showUploadSection ? (
         <div>
@@ -170,7 +167,6 @@ const DragUploadSection = ({ onDrop, onFileUploaded }) => {
       ) : (
         <div className="chat-section">
           <h2>Your chat will appear here!</h2>
-          {/* Tu możesz umieścić swój komponent czatu */}
         </div>
       )}
     </div>

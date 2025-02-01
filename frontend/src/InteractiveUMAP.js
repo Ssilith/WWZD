@@ -5,7 +5,6 @@ import DragUploadSection from './components/DragUploadSection';
 import HardcodedChat from './components/HardcodedChat';
 import LLMChat from './components/LLMChat';
 import './InteractiveUMAP.css';
-import ChatDialog from './components/ChatDialog';
 import Spinner from './components/Spinner';
 
 
@@ -186,13 +185,9 @@ const InteractiveUMAP = () => {
   return (
     <div className="page-container">
       <Header />
-
-      {/* 1. Sekcja uploadu pliku */}
       {!isFileUploaded && (
         <DragUploadSection onFileUploaded={handleFileUploadSuccess} />
       )}
-
-      {/* 2. Wybór trybu rozmowy */}
       {isFileUploaded && !loading && !showDialog && !data && (
         <div className="radio-group">
           <p>Wybierz formę rozmowy:</p>
@@ -223,39 +218,28 @@ const InteractiveUMAP = () => {
           </button>
         </div>
       )}
-
-      {/* 3. Okno dialogowe */}
       {!loading && showDialog && chatMode === 'hardcoded' && (
-        // <HardcodedChat columns={columns} onSubmit={fetchUMAPData} />
         <HardcodedChat
           columns={columns}
           onSubmit={(selectedDataCol, metadataCol, neighbors, minDistance) => {
-            setDataCol(selectedDataCol); // Ustawienie dataCol
-            fetchUMAPData(selectedDataCol, metadataCol, neighbors, minDistance); // Wywołanie analizy UMAP
+            setDataCol(selectedDataCol);
+            fetchUMAPData(selectedDataCol, metadataCol, neighbors, minDistance);
           }}
         />
       )}
       {!loading && showDialog && chatMode === 'llm' && (
-        // <LLMChat columns={columns} onSubmit={fetchUMAPData} />
         <LLMChat
           columns={columns}
           onSubmit={(selectedDataCol, metadataCol, neighbors, minDistance) => {
-            setDataCol(selectedDataCol); // Ustawienie dataCol
-            fetchUMAPData(selectedDataCol, metadataCol, neighbors, minDistance); // Wywołanie analizy UMAP
+            setDataCol(selectedDataCol);
+            fetchUMAPData(selectedDataCol, metadataCol, neighbors, minDistance);
           }}
         />
 
       )}
-
-      {/* 4. "Loading..." */}
       {loading && (
-        // <div style={{ marginTop: '20px', fontSize: '18px', textAlign: 'center' }}>
-        //   Wczytywanie danych...
-        // </div>
         <Spinner />
       )}
-
-      {/* 5. Wizualizacja */}
       {data && (
         <div id="umap-viz">
           <svg />
@@ -263,9 +247,6 @@ const InteractiveUMAP = () => {
       )}
 
       <div id="tooltip"></div>
-
-
-      {/* 6. Obsługa błędów */}
       {error && <div style={{ color: 'red' }}>Błąd: {error.message}</div>}
     </div>
   );

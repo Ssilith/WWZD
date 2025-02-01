@@ -108,9 +108,7 @@ const HardcodedChat = ({ columns, onSubmit }) => {
           addBotMessage(
             `OK. Parametry:\nDane: ${dataCol}\nMetadata: ${metadataCol}\nNeighbors: ${neighbors}\nMinDist: ${minDistance}\nPobieram UMAP...`
           );
-          // Wołamy "onSubmit" do rodzica, który pobiera dane i rysuje wykres
           onSubmit(dataCol, metadataCol, neighbors, minDistance);
-          // Teoretycznie koniec. Można zablokować kolejne kroki lub ustawić step = 9
           setStep(9);
         } else if (inputText.toLowerCase() === 'nie') {
           addBotMessage('Ok, podaj minimalny dystans jeszcze raz:');
@@ -121,7 +119,6 @@ const HardcodedChat = ({ columns, onSubmit }) => {
         break;
       }
       default:
-        // Po 8-9 krokach mamy koniec, ewentualnie nic nie robimy.
         break;
     }
   };
