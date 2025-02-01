@@ -3,6 +3,9 @@ from openpyxl.utils import get_column_letter
 import requests
 import pandas as pd
 import csv
+import os
+
+vectorize_model = os.getenv("VECTORIZE_MODEL", "bge-m3")
 
 
 def vectorize(data_col, metadata_col, dataframe, max_length=512):
@@ -11,7 +14,7 @@ def vectorize(data_col, metadata_col, dataframe, max_length=512):
 
     payload = {
         "application": "similarity",
-        "task": "sbert-klej-cdsc-r",
+        "task": vectorize_model,
         "input": data,
     }
 
@@ -28,7 +31,7 @@ def vectorize(data_col, metadata_col, dataframe, max_length=512):
                 metadata = metadata[: len(vectorized_data)]
 
         with open(
-            "files/vector_metadata.csv", mode="w", newline="", encoding="utf-8"
+                "files/vector_metadata.csv", mode="w", newline="", encoding="utf-8"
         ) as file:
             writer = csv.writer(file, delimiter=";")
             for vector, meta in zip(vectorized_data, metadata):

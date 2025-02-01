@@ -3,61 +3,78 @@ import requests
 import re
 
 
-def identify_columns_with_llm(existing_columns, columns_names):
-    print("Using LLM model.")
-    print(f"Available columns: {existing_columns}")
-    print(f"Column names: {columns_names}")
-
-    while True:
-        user_data_input = input("Please specify the data column: ").strip()
-        user_metadata_input = input("Please specify the metadata column: ").strip()
-
+def identify_columns_with_llm(dialog, column_names):
+        column_label = generate_excel_labels(len(column_names))
+        map_of_columns = dict(zip(column_label, column_names))
         messages = [
             {
-                "role": "user",
-                "content": (
-                    f"Given the user input that the the data column is: '{user_data_input}' and metadata column is: '{user_metadata_input}', can you identify the data column and the metadata column "
-                    f"from the available columns: [{', '.join(existing_columns)}] with names [{', '.join(columns_names)}]? "
-                    'Please respond ONLY AND NOTHING MORE in the following format: {"data_column": data_col, "metadata_column": metadata_col} WHERE data_col and metadata_col is a simple uppercase letter of column name.'
-                ),
+                f"role": "system",
+                f"content": f" From the available columns with names: {map_of_columns}"
+                           f" You are discussing with the user about selecting columns from the available options"
+                           f" they want to use. They should receive one data_column and one metadata_column"
+                           f" from the chosen options. Return the parameters by full name of columns"
+                           f" Please respond ONLY AND NOTHING MORE in the following format:"
+                           ' {"data_column": data_col, "metadata_column": metadata_col, "text": text}'
+                           ' where the parameter text should contain'
+                           f" your message to the user, and data_col and metadata_col"
+                           f" parameters represent the selected columns from the list,"
+                           f" which the user expects to receive by their full names."
+                           f"All parameters should be in string format"
+                            f"Responses in polish"
+
             }
         ]
+        for i, message in enumerate(dialog):
+            if i % 2 == 0:
+                messages.append({
+                    "role": "user",
+                    "content": f"{message}"
+                })
+            else:
+                messages.append({
+                    "role": "assistant",
+                    "content": f"{message}"
+                })
 
-        payload = {"model": "llama", "messages": messages}
+        print(f"Messages:      {messages}")
+        payload = {"model": "llama3.3", "messages": messages}
 
         response = requests.post(CHAT_COMPLETION_URL, headers=HEADERS, json=payload)
 
         if response.status_code == 200:
             llm_response = response.json()
+            # print(f"LLM_RESPONSE:      {llm_response}")
             interpretation_message = llm_response["choices"][0]["message"]["content"]
-            print(f"LLM interpreted: {interpretation_message}")
 
             try:
                 result = eval(interpretation_message)
                 data_col = result.get("data_column")
                 metadata_col = result.get("metadata_column")
-
-                confirmation = (
-                    input(
-                        f"You have selected data column '{data_col}' and metadata column '{metadata_col}'. Do you confirm? (yes/no): "
-                    )
-                    .strip()
-                    .lower()
-                )
-
-                if confirmation in ["yes", "y", ""]:
-                    return {"data_column": data_col, "metadata_column": metadata_col}
-                else:
-                    print("Selection was not confirmed. Please try again.")
-
+                text_col = result.get("text")
+                return ({
+                    "data_column": data_col,
+                    "metadata_column": metadata_col,
+                    "text": text_col
+                })
             except Exception as e:
-                print(
-                    "Failed to parse LLM response. Ensure it returned the expected format."
-                )
-                continue
+                raise Exception(e)
 
         else:
             raise Exception("Error with chat completion:", response.json())
+
+
+def generate_list(n):
+    result = ""
+    while True:
+        n, r = divmod(n, 26)
+        result = chr(r + ord('A')) + result
+        if n == 0:
+            break
+    return result
+
+
+def generate_excel_labels(length):
+    return [generate_list(i) for i in range(length)]
 
 
 def identify_columns_hardcoded(existing_columns, columns_names):
